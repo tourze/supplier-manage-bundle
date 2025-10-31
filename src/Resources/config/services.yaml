@@ -1,0 +1,35 @@
+services:
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    public: false
+
+  Tourze\SupplierManageBundle\DependencyInjection\SupplierManageExtension:
+    public: true
+
+  Tourze\SupplierManageBundle\Repository\:
+    resource: '../../Repository/'
+    
+  Tourze\SupplierManageBundle\Service\:
+    resource: '../../Service/'
+
+  # 明确定义Repository以确保正确注册
+  Tourze\SupplierManageBundle\Repository\SupplierRepository:
+    autowire: true
+    autoconfigure: true
+
+  # 明确定义SupplierService以确保正确注册
+  Tourze\SupplierManageBundle\Service\SupplierService:
+    autowire: true
+    autoconfigure: true
+    arguments:
+      $supplierRepository: '@Tourze\SupplierManageBundle\Repository\SupplierRepository'
+    
+  Tourze\SupplierManageBundle\Controller\:
+    resource: '../../Controller/'
+    tags: ['controller.service_arguments']
+    
+  Tourze\SupplierManageBundle\EventListener\:
+    resource: '../../EventListener/'
+    public: true
