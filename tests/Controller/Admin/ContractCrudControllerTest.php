@@ -61,6 +61,30 @@ final class ContractCrudControllerTest extends AbstractSupplierEasyAdminControll
         // Note: EasyAdmin form validation requires complex setup, actual validation is tested at entity level
     }
 
+    public function testDetail(): void
+    {
+        // Test detail action exists
+
+        // Test detail method exists in controller
+        $reflection = new \ReflectionClass(ContractCrudController::class);
+        $this->assertTrue($reflection->hasMethod('detail'));
+
+        $detailMethod = $reflection->getMethod('detail');
+        $this->assertTrue($detailMethod->isPublic());
+    }
+
+    public function testDelete(): void
+    {
+        // Test delete action exists
+
+        // Test delete method exists in controller
+        $reflection = new \ReflectionClass(ContractCrudController::class);
+        $this->assertTrue($reflection->hasMethod('delete'));
+
+        $deleteMethod = $reflection->getMethod('delete');
+        $this->assertTrue($deleteMethod->isPublic());
+    }
+
     /**
      * @return AbstractCrudController<Contract>
      */

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Tourze\SupplierManageBundle\Controller\Admin;
 
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminAction;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -23,12 +25,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\BooleanFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
-use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\TextFilter;
 use Symfony\Component\HttpFoundation\Response;
 use Tourze\EasyAdminEnumFieldBundle\Field\EnumField;
+use Tourze\SupplierManageBundle\Controller\Admin\Traits\SafeAdminContextTrait;
 use Tourze\SupplierManageBundle\Entity\SupplierQualification;
 use Tourze\SupplierManageBundle\Enum\SupplierQualificationStatus;
 
@@ -40,6 +42,7 @@ use Tourze\SupplierManageBundle\Enum\SupplierQualificationStatus;
 #[AdminCrud(routePath: '/supplier/qualification', routeName: 'supplier_qualification')]
 final class SupplierQualificationCrudController extends AbstractCrudController
 {
+    use SafeAdminContextTrait;
     public static function getEntityFqcn(): string
     {
         return SupplierQualification::class;
@@ -112,6 +115,42 @@ final class SupplierQualificationCrudController extends AbstractCrudController
         }
 
         return $this->getFormFields($pageName);
+    }
+
+    /**
+     * 重写 detail 以安全处理 AdminContext
+     */
+        public function detail(AdminContext $context)
+    {
+        if (null !== $response = $this->guardEntityRequiredAction($context, Action::DETAIL)) {
+            return $response;
+        }
+
+        return parent::detail($context);
+    }
+
+    /**
+     * 重写 edit 以安全处理 AdminContext
+     */
+        public function edit(AdminContext $context)
+    {
+        if (null !== $response = $this->guardEntityRequiredAction($context, Action::EDIT)) {
+            return $response;
+        }
+
+        return parent::edit($context);
+    }
+
+    /**
+     * 重写 delete 以安全处理 AdminContext
+     */
+        public function delete(AdminContext $context)
+    {
+        if (null !== $response = $this->guardEntityRequiredAction($context, Action::DELETE)) {
+            return $response;
+        }
+
+        return parent::delete($context);
     }
 
     public function configureFilters(Filters $filters): Filters
@@ -512,5 +551,13 @@ final class SupplierQualificationCrudController extends AbstractCrudController
             'crudControllerFqcn' => self::class,
             'entityId' => $qualification->getId(),
         ]));
+    }
+
+    /**
+     * 重写index方法以安全处理AdminContext
+     */
+        public function index(AdminContext $context): \Symfony\Component\HttpFoundation\Response|\EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore
+    {
+        return $this->safeIndex($context);
     }
 }

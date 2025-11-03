@@ -10,10 +10,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
@@ -26,6 +26,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\TextFilter;
 use Symfony\Component\HttpFoundation\Response;
 use Tourze\EasyAdminEnumFieldBundle\Field\EnumField;
+use Tourze\SupplierManageBundle\Controller\Admin\Traits\SafeAdminContextTrait;
 use Tourze\SupplierManageBundle\Entity\Supplier;
 use Tourze\SupplierManageBundle\Enum\CooperationModel;
 use Tourze\SupplierManageBundle\Enum\SupplierStatus;
@@ -38,6 +39,7 @@ use Tourze\SupplierManageBundle\Enum\SupplierType;
 #[AdminCrud(routePath: '/supplier/supplier', routeName: 'supplier_supplier')]
 final class SupplierCrudController extends AbstractCrudController
 {
+    use SafeAdminContextTrait;
     public static function getEntityFqcn(): string
     {
         return Supplier::class;
@@ -284,6 +286,42 @@ final class SupplierCrudController extends AbstractCrudController
     }
 
     /**
+     * 重写 detail 以安全处理 AdminContext（避免 getEntity() 触发 500）
+     */
+        public function detail(AdminContext $context)
+    {
+        if (null !== $response = $this->guardEntityRequiredAction($context, Action::DETAIL)) {
+            return $response;
+        }
+
+        return parent::detail($context);
+    }
+
+    /**
+     * 重写 edit 以安全处理 AdminContext
+     */
+        public function edit(AdminContext $context)
+    {
+        if (null !== $response = $this->guardEntityRequiredAction($context, Action::EDIT)) {
+            return $response;
+        }
+
+        return parent::edit($context);
+    }
+
+    /**
+     * 重写 delete 以安全处理 AdminContext
+     */
+        public function delete(AdminContext $context)
+    {
+        if (null !== $response = $this->guardEntityRequiredAction($context, Action::DELETE)) {
+            return $response;
+        }
+
+        return parent::delete($context);
+    }
+
+    /**
      * 管理供应商联系人
      */
     #[AdminAction(routeName: 'supplier_view_contacts', routePath: '{entityId}/view-contacts')]
@@ -325,5 +363,13 @@ final class SupplierCrudController extends AbstractCrudController
         $this->addFlash('info', '绩效评估管理功能开发中，请通过相关CRUD页面管理');
 
         return $this->redirectToRoute('admin');
+    }
+
+    /**
+     * 重写index方法以安全处理AdminContext
+     */
+        public function index(AdminContext $context): \Symfony\Component\HttpFoundation\Response|\EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore
+    {
+        return $this->safeIndex($context);
     }
 }

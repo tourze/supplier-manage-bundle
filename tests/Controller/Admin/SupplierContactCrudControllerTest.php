@@ -6,7 +6,6 @@ namespace Tourze\SupplierManageBundle\Tests\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Tourze\SupplierManageBundle\Controller\Admin\SupplierContactCrudController;
 use Tourze\SupplierManageBundle\Entity\SupplierContact;
@@ -60,6 +59,30 @@ final class SupplierContactCrudControllerTest extends AbstractSupplierEasyAdminC
         $this->assertStringContainsString('should not be blank', $mockContent, 'Should show validation message');
         // Additional validation: ensure controller has proper field validation
         // Note: EasyAdmin form validation requires complex setup, actual validation is tested at entity level
+    }
+
+    public function testDetail(): void
+    {
+        // Test detail action exists
+
+        // Test detail method exists in controller
+        $reflection = new \ReflectionClass(SupplierContactCrudController::class);
+        $this->assertTrue($reflection->hasMethod('detail'));
+
+        $detailMethod = $reflection->getMethod('detail');
+        $this->assertTrue($detailMethod->isPublic());
+    }
+
+    public function testDelete(): void
+    {
+        // Test delete action exists
+
+        // Test delete method exists in controller
+        $reflection = new \ReflectionClass(SupplierContactCrudController::class);
+        $this->assertTrue($reflection->hasMethod('delete'));
+
+        $deleteMethod = $reflection->getMethod('delete');
+        $this->assertTrue($deleteMethod->isPublic());
     }
 
     /**

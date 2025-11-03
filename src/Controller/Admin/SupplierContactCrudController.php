@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Tourze\SupplierManageBundle\Controller\Admin;
 
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminAction;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
@@ -20,11 +22,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TelephoneField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\BooleanFilter;
-use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use Symfony\Component\HttpFoundation\Response;
-use Tourze\SupplierManageBundle\Entity\Supplier;
+use Tourze\SupplierManageBundle\Controller\Admin\Traits\SafeAdminContextTrait;
 use Tourze\SupplierManageBundle\Entity\SupplierContact;
 
 /**
@@ -34,6 +35,7 @@ use Tourze\SupplierManageBundle\Entity\SupplierContact;
 #[AdminCrud(routePath: '/supplier/contact', routeName: 'supplier_contact')]
 final class SupplierContactCrudController extends AbstractCrudController
 {
+    use SafeAdminContextTrait;
     public static function getEntityFqcn(): string
     {
         return SupplierContact::class;
@@ -191,6 +193,42 @@ final class SupplierContactCrudController extends AbstractCrudController
     }
 
     /**
+     * 重写 detail 以安全处理 AdminContext
+     */
+        public function detail(AdminContext $context)
+    {
+        if (null !== $response = $this->guardEntityRequiredAction($context, Action::DETAIL)) {
+            return $response;
+        }
+
+        return parent::detail($context);
+    }
+
+    /**
+     * 重写 edit 以安全处理 AdminContext
+     */
+        public function edit(AdminContext $context)
+    {
+        if (null !== $response = $this->guardEntityRequiredAction($context, Action::EDIT)) {
+            return $response;
+        }
+
+        return parent::edit($context);
+    }
+
+    /**
+     * 重写 delete 以安全处理 AdminContext
+     */
+        public function delete(AdminContext $context)
+    {
+        if (null !== $response = $this->guardEntityRequiredAction($context, Action::DELETE)) {
+            return $response;
+        }
+
+        return parent::delete($context);
+    }
+
+    /**
      * 设置为主要联系人
      */
     #[AdminAction(routeName: 'make_primary', routePath: '{entityId}/make-primary')]
@@ -263,5 +301,13 @@ final class SupplierContactCrudController extends AbstractCrudController
             'crudAction' => 'index',
             'crudControllerFqcn' => self::class,
         ]));
+    }
+
+    /**
+     * 重写index方法以安全处理AdminContext
+     */
+        public function index(AdminContext $context): \Symfony\Component\HttpFoundation\Response|\EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore
+    {
+        return $this->safeIndex($context);
     }
 }

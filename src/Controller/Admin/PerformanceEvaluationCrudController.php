@@ -14,7 +14,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
@@ -29,6 +28,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\NumericFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\TextFilter;
 use Symfony\Component\HttpFoundation\Response;
 use Tourze\EasyAdminEnumFieldBundle\Field\EnumField;
+use Tourze\SupplierManageBundle\Controller\Admin\Traits\SafeAdminContextTrait;
 use Tourze\SupplierManageBundle\Entity\PerformanceEvaluation;
 use Tourze\SupplierManageBundle\Enum\PerformanceEvaluationStatus;
 use Tourze\SupplierManageBundle\Enum\PerformanceGrade;
@@ -41,6 +41,7 @@ use Tourze\SupplierManageBundle\Enum\PerformanceGrade;
 #[AdminCrud(routePath: '/supplier/performance-evaluation', routeName: 'supplier_performance_evaluation')]
 final class PerformanceEvaluationCrudController extends AbstractCrudController
 {
+    use SafeAdminContextTrait;
     public static function getEntityFqcn(): string
     {
         return PerformanceEvaluation::class;
@@ -317,7 +318,7 @@ final class PerformanceEvaluationCrudController extends AbstractCrudController
             ->hideOnForm()
         ;
 
-        yield TextField::new('isCompleted', '完成状态')
+        yield TextField::new('completedStatus', '完成状态')
             ->hideOnForm()
             ->setColumns(3)
             ->formatValue(function ($value, PerformanceEvaluation $entity) {
@@ -328,9 +329,10 @@ final class PerformanceEvaluationCrudController extends AbstractCrudController
                 return '<span class="badge badge-warning">进行中</span>';
             })
             ->setHelp('评估是否已完成')
+            ->setVirtual(true)
         ;
 
-        yield TextField::new('isApproved', '审批状态')
+        yield TextField::new('approvalStatus', '审批状态')
             ->hideOnForm()
             ->setColumns(3)
             ->formatValue(function ($value, PerformanceEvaluation $entity) {
@@ -344,6 +346,7 @@ final class PerformanceEvaluationCrudController extends AbstractCrudController
                 return '<span class="badge badge-info">待审批</span>';
             })
             ->setHelp('评估的审批状态')
+            ->setVirtual(true)
         ;
 
         yield TextField::new('scoreComparison', '得分对比')
@@ -525,5 +528,50 @@ final class PerformanceEvaluationCrudController extends AbstractCrudController
             'crudControllerFqcn' => self::class,
             'entityId' => $evaluation->getId(),
         ]));
+    }
+
+    /**
+     * 重写edit方法以安全处理AdminContext
+     */
+        public function edit(AdminContext $context)
+    {
+        // 在需要实体的动作之前进行安全守卫，避免 AdminContext::getEntity() 返回 null 造成 500
+        if (null !== $response = $this->guardEntityRequiredAction($context, Action::EDIT)) {
+            return $response;
+        }
+
+        return parent::edit($context);
+    }
+
+    /**
+     * 重写detail方法以安全处理AdminContext
+     */
+        public function detail(AdminContext $context)
+    {
+        if (null !== $response = $this->guardEntityRequiredAction($context, Action::DETAIL)) {
+            return $response;
+        }
+
+        return parent::detail($context);
+    }
+
+    /**
+     * 重写delete方法以安全处理AdminContext
+     */
+        public function delete(AdminContext $context)
+    {
+        if (null !== $response = $this->guardEntityRequiredAction($context, Action::DELETE)) {
+            return $response;
+        }
+
+        return parent::delete($context);
+    }
+
+    /**
+     * 重写index方法以安全处理AdminContext
+     */
+        public function index(AdminContext $context): \Symfony\Component\HttpFoundation\Response|\EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore
+    {
+        return $this->safeIndex($context);
     }
 }
