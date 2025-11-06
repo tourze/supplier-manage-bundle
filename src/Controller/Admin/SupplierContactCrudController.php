@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\SupplierManageBundle\Controller\Admin;
 
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminAction;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
@@ -11,6 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -36,6 +38,7 @@ use Tourze\SupplierManageBundle\Entity\SupplierContact;
 final class SupplierContactCrudController extends AbstractCrudController
 {
     use SafeAdminContextTrait;
+
     public static function getEntityFqcn(): string
     {
         return SupplierContact::class;
@@ -195,7 +198,8 @@ final class SupplierContactCrudController extends AbstractCrudController
     /**
      * 重写 detail 以安全处理 AdminContext
      */
-        public function detail(AdminContext $context)
+    #[AdminAction(routePath: '{entityId}/detail', routeName: 'detail')]
+    public function detail(AdminContext $context)
     {
         if (null !== $response = $this->guardEntityRequiredAction($context, Action::DETAIL)) {
             return $response;
@@ -207,7 +211,7 @@ final class SupplierContactCrudController extends AbstractCrudController
     /**
      * 重写 edit 以安全处理 AdminContext
      */
-        public function edit(AdminContext $context)
+    public function edit(AdminContext $context)
     {
         if (null !== $response = $this->guardEntityRequiredAction($context, Action::EDIT)) {
             return $response;
@@ -219,7 +223,7 @@ final class SupplierContactCrudController extends AbstractCrudController
     /**
      * 重写 delete 以安全处理 AdminContext
      */
-        public function delete(AdminContext $context)
+    public function delete(AdminContext $context)
     {
         if (null !== $response = $this->guardEntityRequiredAction($context, Action::DELETE)) {
             return $response;
@@ -257,7 +261,7 @@ final class SupplierContactCrudController extends AbstractCrudController
         $contact->setIsPrimary(true);
 
         $doctrine = $this->container->get('doctrine');
-        assert($doctrine instanceof \Doctrine\Bundle\DoctrineBundle\Registry);
+        assert($doctrine instanceof Registry);
         $entityManager = $doctrine->getManager();
         assert($entityManager instanceof EntityManagerInterface);
         $entityManager->flush();
@@ -290,7 +294,7 @@ final class SupplierContactCrudController extends AbstractCrudController
         $contact->setIsPrimary(false);
 
         $doctrine = $this->container->get('doctrine');
-        assert($doctrine instanceof \Doctrine\Bundle\DoctrineBundle\Registry);
+        assert($doctrine instanceof Registry);
         $entityManager = $doctrine->getManager();
         assert($entityManager instanceof EntityManagerInterface);
         $entityManager->flush();
@@ -306,7 +310,7 @@ final class SupplierContactCrudController extends AbstractCrudController
     /**
      * 重写index方法以安全处理AdminContext
      */
-        public function index(AdminContext $context): \Symfony\Component\HttpFoundation\Response|\EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore
+    public function index(AdminContext $context): Response|KeyValueStore
     {
         return $this->safeIndex($context);
     }

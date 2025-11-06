@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Tourze\SupplierManageBundle\Controller\Admin\Traits;
 
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * 针对 EasyAdmin 在某些情况下 AdminContext::getEntity() 返回 null（但签名非空）的问题
@@ -33,11 +35,17 @@ trait SafeAdminContextTrait
         $request = $context->getRequest();
         $entityId = $request->attributes->get('entityId') ?? $request->query->get('entityId');
 
+        $crudDto = $context->getCrud();
+        if (null === $crudDto || null === $crudDto->getControllerFqcn()) {
+            // 无法获取控制器信息，回退到原始方法
+            return null;
+        }
+
         if (null !== $entityId) {
-            // 使用“丑 URL”参数，确保路由解析时能拿到 FQCN、action 和实体 ID
+            // 使用"丑 URL"参数，确保路由解析时能拿到 FQCN、action 和实体 ID
             return new RedirectResponse($this->generateUrl('admin', [
                 'crudAction' => $targetAction,
-                'crudControllerFqcn' => static::class,
+                'crudControllerFqcn' => $crudDto->getControllerFqcn(),
                 'entityId' => $entityId,
             ]));
         }
@@ -45,7 +53,7 @@ trait SafeAdminContextTrait
         // 无实体 ID，只能回到列表页，避免 500
         return new RedirectResponse($this->generateUrl('admin', [
             'crudAction' => 'index',
-            'crudControllerFqcn' => static::class,
+            'crudControllerFqcn' => $crudDto->getControllerFqcn(),
         ]));
     }
 
@@ -64,21 +72,23 @@ trait SafeAdminContextTrait
     /**
      * 安全的index方法实现，处理AdminContext::getEntity()返回null的情况
      */
-    protected function safeIndex(AdminContext $context): \Symfony\Component\HttpFoundation\Response|\EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore
+    protected function safeIndex(AdminContext $context): Response|KeyValueStore
     {
         try {
             return parent::index($context);
         } catch (\TypeError $e) {
             // 如果是AdminContext::getEntity()相关的TypeError，重定向到安全页面
             if (str_contains($e->getMessage(), 'AdminContext::getEntity')) {
-                // 使用admin路由和正确的参数格式
-                return new RedirectResponse($this->generateUrl('admin', [
-                    'crudAction' => 'index',
-                    'crudControllerFqcn' => static::class,
-                ]));
+                $crudDto = $context->getCrud();
+                if (null !== $crudDto && null !== $crudDto->getControllerFqcn()) {
+                    // 使用admin路由和正确的参数格式
+                    return new RedirectResponse($this->generateUrl('admin', [
+                        'crudAction' => 'index',
+                        'crudControllerFqcn' => $crudDto->getControllerFqcn(),
+                    ]));
+                }
             }
             throw $e;
         }
     }
 }
-

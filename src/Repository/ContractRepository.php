@@ -373,7 +373,7 @@ class ContractRepository extends ServiceEntityRepository
 
         $counts = [];
         foreach ($results as $result) {
-            assert(is_array($result) && isset($result['status']) && isset($result['count']));
+            assert(is_array($result) && isset($result['status'], $result['count']));
             $status = $result['status'];
             if ($status instanceof ContractStatus) {
                 $status = $status->value;
@@ -491,7 +491,7 @@ class ContractRepository extends ServiceEntityRepository
         ;
 
         assert(is_array($results));
-        assert(isset($results['totalContracts']) && isset($results['completedContracts']));
+        assert(isset($results['totalContracts'], $results['completedContracts']));
         assert(is_int($results['totalContracts']) || is_string($results['totalContracts']) || is_float($results['totalContracts']));
         assert(is_int($results['completedContracts']) || is_string($results['completedContracts']) || is_float($results['completedContracts']));
 
@@ -584,7 +584,7 @@ class ContractRepository extends ServiceEntityRepository
             ->getSingleResult()
         ;
 
-        assert(is_array($totalResult) && isset($totalResult['totalContracts']) && isset($totalResult['completedContracts']));
+        assert(is_array($totalResult) && isset($totalResult['totalContracts'], $totalResult['completedContracts']));
         assert(is_int($totalResult['totalContracts']) || is_string($totalResult['totalContracts']) || is_float($totalResult['totalContracts']));
         assert(is_int($totalResult['completedContracts']) || is_string($totalResult['completedContracts']) || is_float($totalResult['completedContracts']));
 

@@ -239,7 +239,7 @@ class EvaluationItemRepository extends ServiceEntityRepository
 
         $distribution = [];
         foreach ($results as $result) {
-            assert(is_array($result) && isset($result['itemType']) && isset($result['count']));
+            assert(is_array($result) && isset($result['itemType'], $result['count']));
             $itemType = $result['itemType'];
             if ($itemType instanceof EvaluationItemType) {
                 $itemTypeKey = $itemType->value;

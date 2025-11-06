@@ -410,7 +410,7 @@ class SupplierRepositoryTest extends AbstractRepositoryTestCase
 
         $this->assertGreaterThan(0, count($results));
         $foundRecent = false;
-        /** @var \Tourze\SupplierManageBundle\Entity\Supplier $result */
+        /** @var Supplier $result */
         foreach ($results as $result) {
             if ('Recent Supplier' === $result->getName()) {
                 $foundRecent = true;

@@ -10,6 +10,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -40,6 +41,7 @@ use Tourze\SupplierManageBundle\Enum\SupplierType;
 final class SupplierCrudController extends AbstractCrudController
 {
     use SafeAdminContextTrait;
+
     public static function getEntityFqcn(): string
     {
         return Supplier::class;
@@ -288,7 +290,7 @@ final class SupplierCrudController extends AbstractCrudController
     /**
      * 重写 detail 以安全处理 AdminContext（避免 getEntity() 触发 500）
      */
-        public function detail(AdminContext $context)
+    public function detail(AdminContext $context)
     {
         if (null !== $response = $this->guardEntityRequiredAction($context, Action::DETAIL)) {
             return $response;
@@ -300,7 +302,7 @@ final class SupplierCrudController extends AbstractCrudController
     /**
      * 重写 edit 以安全处理 AdminContext
      */
-        public function edit(AdminContext $context)
+    public function edit(AdminContext $context)
     {
         if (null !== $response = $this->guardEntityRequiredAction($context, Action::EDIT)) {
             return $response;
@@ -312,7 +314,7 @@ final class SupplierCrudController extends AbstractCrudController
     /**
      * 重写 delete 以安全处理 AdminContext
      */
-        public function delete(AdminContext $context)
+    public function delete(AdminContext $context)
     {
         if (null !== $response = $this->guardEntityRequiredAction($context, Action::DELETE)) {
             return $response;
@@ -368,7 +370,7 @@ final class SupplierCrudController extends AbstractCrudController
     /**
      * 重写index方法以安全处理AdminContext
      */
-        public function index(AdminContext $context): \Symfony\Component\HttpFoundation\Response|\EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore
+    public function index(AdminContext $context): Response|KeyValueStore
     {
         return $this->safeIndex($context);
     }

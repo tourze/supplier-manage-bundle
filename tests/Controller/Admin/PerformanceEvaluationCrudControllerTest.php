@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\SupplierManageBundle\Tests\Controller\Admin;
 
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminAction;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
@@ -146,7 +147,7 @@ final class PerformanceEvaluationCrudControllerTest extends AbstractSupplierEasy
 
         // 验证方法有正确的注解
         $method = $reflection->getMethod('calculateGrade');
-        $attributes = $method->getAttributes(\EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminAction::class);
+        $attributes = $method->getAttributes(AdminAction::class);
         $this->assertCount(1, $attributes);
     }
 
@@ -158,7 +159,7 @@ final class PerformanceEvaluationCrudControllerTest extends AbstractSupplierEasy
 
         // 验证方法有正确的注解
         $method = $reflection->getMethod('submitForReview');
-        $attributes = $method->getAttributes(\EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminAction::class);
+        $attributes = $method->getAttributes(AdminAction::class);
         $this->assertCount(1, $attributes);
     }
 
@@ -170,7 +171,7 @@ final class PerformanceEvaluationCrudControllerTest extends AbstractSupplierEasy
 
         // 验证方法有正确的注解
         $method = $reflection->getMethod('approve');
-        $attributes = $method->getAttributes(\EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminAction::class);
+        $attributes = $method->getAttributes(AdminAction::class);
         $this->assertCount(1, $attributes);
     }
 
@@ -182,7 +183,7 @@ final class PerformanceEvaluationCrudControllerTest extends AbstractSupplierEasy
 
         // 验证方法有正确的注解
         $method = $reflection->getMethod('reject');
-        $attributes = $method->getAttributes(\EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminAction::class);
+        $attributes = $method->getAttributes(AdminAction::class);
         $this->assertCount(1, $attributes);
     }
 }

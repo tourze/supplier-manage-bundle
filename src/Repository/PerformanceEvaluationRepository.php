@@ -248,7 +248,7 @@ class PerformanceEvaluationRepository extends ServiceEntityRepository
 
         $distribution = [];
         foreach ($results as $result) {
-            assert(is_array($result) && isset($result['grade']) && isset($result['count']));
+            assert(is_array($result) && isset($result['grade'], $result['count']));
             assert(is_string($result['grade']) || is_int($result['grade']));
             assert(is_int($result['count']) || is_string($result['count']));
             $distribution[(string) $result['grade']] = (int) $result['count'];

@@ -107,7 +107,7 @@ class SupplierRepository extends ServiceEntityRepository
 
         $counts = [];
         foreach ($results as $result) {
-            assert(is_array($result) && isset($result['status']) && isset($result['count']));
+            assert(is_array($result) && isset($result['status'], $result['count']));
             // 处理枚举类型：如果是枚举对象，获取其值
             $status = $result['status'];
             if ($status instanceof SupplierStatus) {
@@ -289,7 +289,7 @@ class SupplierRepository extends ServiceEntityRepository
 
         $counts = [];
         foreach ($results as $result) {
-            assert(is_array($result) && isset($result['supplierType']) && isset($result['count']));
+            assert(is_array($result) && isset($result['supplierType'], $result['count']));
             // 处理枚举类型：如果是枚举对象，获取其值
             $supplierType = $result['supplierType'];
             if ($supplierType instanceof SupplierType) {
@@ -462,7 +462,7 @@ class SupplierRepository extends ServiceEntityRepository
 
         $counts = [];
         foreach ($results as $result) {
-            assert(is_array($result) && isset($result['industry']) && isset($result['count']));
+            assert(is_array($result) && isset($result['industry'], $result['count']));
             assert(is_string($result['industry']) || is_int($result['industry']));
             assert(is_int($result['count']) || is_string($result['count']) || is_float($result['count']));
             $counts[(string) $result['industry']] = (int) $result['count'];
@@ -487,7 +487,7 @@ class SupplierRepository extends ServiceEntityRepository
 
         $counts = [];
         foreach ($results as $result) {
-            assert(is_array($result) && isset($result['region']) && isset($result['count']));
+            assert(is_array($result) && isset($result['region'], $result['count']));
             assert(is_string($result['region']) || is_int($result['region']));
             assert(is_int($result['count']) || is_string($result['count']) || is_float($result['count']));
             $counts[(string) $result['region']] = (int) $result['count'];

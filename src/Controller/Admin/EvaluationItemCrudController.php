@@ -10,6 +10,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -38,6 +39,7 @@ use Tourze\SupplierManageBundle\Enum\EvaluationItemType;
 final class EvaluationItemCrudController extends AbstractCrudController
 {
     use SafeAdminContextTrait;
+
     public static function getEntityFqcn(): string
     {
         return EvaluationItem::class;
@@ -299,7 +301,7 @@ final class EvaluationItemCrudController extends AbstractCrudController
     /**
      * 重写edit方法以安全处理AdminContext
      */
-        public function edit(AdminContext $context)
+    public function edit(AdminContext $context)
     {
         if (null !== $response = $this->guardEntityRequiredAction($context, Action::EDIT)) {
             return $response;
@@ -311,7 +313,8 @@ final class EvaluationItemCrudController extends AbstractCrudController
     /**
      * 重写detail方法以安全处理AdminContext
      */
-        public function detail(AdminContext $context)
+    #[AdminAction(routePath: '{entityId}/detail', routeName: 'detail')]
+    public function detail(AdminContext $context)
     {
         if (null !== $response = $this->guardEntityRequiredAction($context, Action::DETAIL)) {
             return $response;
@@ -323,7 +326,7 @@ final class EvaluationItemCrudController extends AbstractCrudController
     /**
      * 重写delete方法以安全处理AdminContext
      */
-        public function delete(AdminContext $context)
+    public function delete(AdminContext $context)
     {
         if (null !== $response = $this->guardEntityRequiredAction($context, Action::DELETE)) {
             return $response;
@@ -335,7 +338,7 @@ final class EvaluationItemCrudController extends AbstractCrudController
     /**
      * 重写index方法以安全处理AdminContext
      */
-        public function index(AdminContext $context): \Symfony\Component\HttpFoundation\Response|\EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore
+    public function index(AdminContext $context): Response|KeyValueStore
     {
         return $this->safeIndex($context);
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\SupplierManageBundle\Controller\Admin;
 
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminAction;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
@@ -11,6 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
@@ -43,6 +45,7 @@ use Tourze\SupplierManageBundle\Enum\SupplierQualificationStatus;
 final class SupplierQualificationCrudController extends AbstractCrudController
 {
     use SafeAdminContextTrait;
+
     public static function getEntityFqcn(): string
     {
         return SupplierQualification::class;
@@ -120,7 +123,8 @@ final class SupplierQualificationCrudController extends AbstractCrudController
     /**
      * 重写 detail 以安全处理 AdminContext
      */
-        public function detail(AdminContext $context)
+    #[AdminAction(routePath: '{entityId}/detail', routeName: 'detail')]
+    public function detail(AdminContext $context)
     {
         if (null !== $response = $this->guardEntityRequiredAction($context, Action::DETAIL)) {
             return $response;
@@ -132,7 +136,7 @@ final class SupplierQualificationCrudController extends AbstractCrudController
     /**
      * 重写 edit 以安全处理 AdminContext
      */
-        public function edit(AdminContext $context)
+    public function edit(AdminContext $context)
     {
         if (null !== $response = $this->guardEntityRequiredAction($context, Action::EDIT)) {
             return $response;
@@ -144,7 +148,7 @@ final class SupplierQualificationCrudController extends AbstractCrudController
     /**
      * 重写 delete 以安全处理 AdminContext
      */
-        public function delete(AdminContext $context)
+    public function delete(AdminContext $context)
     {
         if (null !== $response = $this->guardEntityRequiredAction($context, Action::DELETE)) {
             return $response;
@@ -310,7 +314,7 @@ final class SupplierQualificationCrudController extends AbstractCrudController
         yield IntegerField::new('validityDays', '有效期（天）')
             ->setColumns(2)
             ->formatValue(function ($value, SupplierQualification $qualification) {
-                return (string)$qualification->getValidityDays() . ' 天';
+                return (string) $qualification->getValidityDays() . ' 天';
             })
             ->setHelp('资质证书的总有效天数')
         ;
@@ -471,7 +475,7 @@ final class SupplierQualificationCrudController extends AbstractCrudController
         $qualification->setStatus(SupplierQualificationStatus::APPROVED);
 
         $doctrine = $this->container->get('doctrine');
-        assert($doctrine instanceof \Doctrine\Bundle\DoctrineBundle\Registry);
+        assert($doctrine instanceof Registry);
         $entityManager = $doctrine->getManager();
         assert($entityManager instanceof EntityManagerInterface);
         $entityManager->flush();
@@ -504,7 +508,7 @@ final class SupplierQualificationCrudController extends AbstractCrudController
         $qualification->setStatus(SupplierQualificationStatus::REJECTED);
 
         $doctrine = $this->container->get('doctrine');
-        assert($doctrine instanceof \Doctrine\Bundle\DoctrineBundle\Registry);
+        assert($doctrine instanceof Registry);
         $entityManager = $doctrine->getManager();
         assert($entityManager instanceof EntityManagerInterface);
         $entityManager->flush();
@@ -538,7 +542,7 @@ final class SupplierQualificationCrudController extends AbstractCrudController
         $qualification->setStatus(SupplierQualificationStatus::PENDING_REVIEW);
 
         $doctrine = $this->container->get('doctrine');
-        assert($doctrine instanceof \Doctrine\Bundle\DoctrineBundle\Registry);
+        assert($doctrine instanceof Registry);
         $entityManager = $doctrine->getManager();
         assert($entityManager instanceof EntityManagerInterface);
         $entityManager->flush();
@@ -556,7 +560,7 @@ final class SupplierQualificationCrudController extends AbstractCrudController
     /**
      * 重写index方法以安全处理AdminContext
      */
-        public function index(AdminContext $context): \Symfony\Component\HttpFoundation\Response|\EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore
+    public function index(AdminContext $context): Response|KeyValueStore
     {
         return $this->safeIndex($context);
     }

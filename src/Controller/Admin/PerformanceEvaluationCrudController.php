@@ -11,6 +11,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -42,6 +43,7 @@ use Tourze\SupplierManageBundle\Enum\PerformanceGrade;
 final class PerformanceEvaluationCrudController extends AbstractCrudController
 {
     use SafeAdminContextTrait;
+
     public static function getEntityFqcn(): string
     {
         return PerformanceEvaluation::class;
@@ -159,7 +161,7 @@ final class PerformanceEvaluationCrudController extends AbstractCrudController
                 ->setNumDecimals(2)
                 ->setHelp('评估的综合得分')
                 ->formatValue(function ($value, PerformanceEvaluation $entity) {
-                    return (string)$entity->getOverallScore() . ' 分';
+                    return (string) $entity->getOverallScore() . ' 分';
                 })
             ;
             $gradeField = EnumField::new('grade', '等级');
@@ -533,7 +535,7 @@ final class PerformanceEvaluationCrudController extends AbstractCrudController
     /**
      * 重写edit方法以安全处理AdminContext
      */
-        public function edit(AdminContext $context)
+    public function edit(AdminContext $context)
     {
         // 在需要实体的动作之前进行安全守卫，避免 AdminContext::getEntity() 返回 null 造成 500
         if (null !== $response = $this->guardEntityRequiredAction($context, Action::EDIT)) {
@@ -546,7 +548,8 @@ final class PerformanceEvaluationCrudController extends AbstractCrudController
     /**
      * 重写detail方法以安全处理AdminContext
      */
-        public function detail(AdminContext $context)
+    #[AdminAction(routePath: '{entityId}/detail', routeName: 'detail')]
+    public function detail(AdminContext $context)
     {
         if (null !== $response = $this->guardEntityRequiredAction($context, Action::DETAIL)) {
             return $response;
@@ -558,7 +561,7 @@ final class PerformanceEvaluationCrudController extends AbstractCrudController
     /**
      * 重写delete方法以安全处理AdminContext
      */
-        public function delete(AdminContext $context)
+    public function delete(AdminContext $context)
     {
         if (null !== $response = $this->guardEntityRequiredAction($context, Action::DELETE)) {
             return $response;
@@ -570,7 +573,7 @@ final class PerformanceEvaluationCrudController extends AbstractCrudController
     /**
      * 重写index方法以安全处理AdminContext
      */
-        public function index(AdminContext $context): \Symfony\Component\HttpFoundation\Response|\EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore
+    public function index(AdminContext $context): Response|KeyValueStore
     {
         return $this->safeIndex($context);
     }
