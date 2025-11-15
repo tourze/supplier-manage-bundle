@@ -401,6 +401,7 @@ class SupplierRepositoryTest extends AbstractRepositoryTestCase
         // 创建最近的供应商
         $recentSupplier = $this->createNewEntity();
         $recentSupplier->setName('Recent Supplier');
+        $recentSupplier->setCreateTime(new \DateTimeImmutable());
 
         self::getEntityManager()->persist($recentSupplier);
         self::getEntityManager()->flush();

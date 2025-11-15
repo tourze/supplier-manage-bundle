@@ -24,7 +24,7 @@ class PerformanceEvaluation implements \Stringable
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '主键ID'])]
-    private int $id = 0;
+    private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Supplier::class, inversedBy: 'performanceEvaluations')]
     #[ORM\JoinColumn(name: 'supplier_id', nullable: false, onDelete: 'CASCADE')]

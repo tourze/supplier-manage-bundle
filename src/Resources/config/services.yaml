@@ -23,6 +23,7 @@ services:
   Tourze\SupplierManageBundle\Service\SupplierService:
     autowire: true
     autoconfigure: true
+    public: true
     arguments:
       $supplierRepository: '@Tourze\SupplierManageBundle\Repository\SupplierRepository'
     

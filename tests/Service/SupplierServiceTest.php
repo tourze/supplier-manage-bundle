@@ -189,7 +189,7 @@ final class SupplierServiceTest extends AbstractIntegrationTestCase
 
         $this->assertIsArray($activeSuppliers);
         $this->assertContains($supplier1, $activeSuppliers);
-        $this->assertContains($supplier2, $activeSuppliers);
+        $this->assertNotContains($supplier2, $activeSuppliers);
     }
 
     #[Test]

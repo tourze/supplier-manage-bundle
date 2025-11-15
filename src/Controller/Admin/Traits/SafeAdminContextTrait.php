@@ -21,9 +21,9 @@ trait SafeAdminContextTrait
      *
      * - 若能取到实体则返回 null，控制器可继续 parent::...()
      * - 若取不到实体：
-     *   1) 若请求中带有 entityId，则重定向到后备的“丑 URL”（admin 路由），
-     *      让 EasyAdmin 再次构建上下文；
-     *   2) 否则回退至当前 CRUD 的 index。
+     *   1) 优先使用 referer 保留完整 EasyAdmin 上下文
+     *   2) 降级：若请求中带有 entityId，则重定向到后备的"丑 URL"（admin 路由）
+     *   3) 最终降级：回退至当前 CRUD 的 index
      */
     protected function guardEntityRequiredAction(AdminContext $context, string $targetAction): ?RedirectResponse
     {
@@ -33,6 +33,14 @@ trait SafeAdminContextTrait
         }
 
         $request = $context->getRequest();
+
+        // 优先使用 referer 保留完整的 EasyAdmin 上下文
+        $referer = $request->headers->get('referer');
+        if ($referer) {
+            return new RedirectResponse($referer);
+        }
+
+        // 降级方案：尝试从请求中获取 entityId
         $entityId = $request->attributes->get('entityId') ?? $request->query->get('entityId');
 
         $crudDto = $context->getCrud();
@@ -79,9 +87,15 @@ trait SafeAdminContextTrait
         } catch (\TypeError $e) {
             // 如果是AdminContext::getEntity()相关的TypeError，重定向到安全页面
             if (str_contains($e->getMessage(), 'AdminContext::getEntity')) {
+                // 优先使用 referer 保留完整的 EasyAdmin 上下文
+                $referer = $context->getRequest()?->headers->get('referer');
+                if ($referer) {
+                    return new RedirectResponse($referer);
+                }
+
+                // 降级方案：构造标准的 admin 路由
                 $crudDto = $context->getCrud();
                 if (null !== $crudDto && null !== $crudDto->getControllerFqcn()) {
-                    // 使用admin路由和正确的参数格式
                     return new RedirectResponse($this->generateUrl('admin', [
                         'crudAction' => 'index',
                         'crudControllerFqcn' => $crudDto->getControllerFqcn(),
