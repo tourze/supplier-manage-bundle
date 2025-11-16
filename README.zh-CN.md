@@ -167,12 +167,12 @@ class ContactController
 1. 确保已安装并配置 EasyAdmin Bundle
 2. 访问 `/admin` 路径即可看到供应商管理菜单
 3. 支持以下实体的管理：
-   - 供应商 (Supplier)
-   - 供应商联系人 (SupplierContact)
-   - 供应商资质 (SupplierQualification)
-   - 合同 (Contract)
-   - 绩效评估 (PerformanceEvaluation)
-   - 评估项 (EvaluationItem)
+    - 供应商 (Supplier)
+    - 供应商联系人 (SupplierContact)
+    - 供应商资质 (SupplierQualification)
+    - 合同 (Contract)
+    - 绩效评估 (PerformanceEvaluation)
+    - 评估项 (EvaluationItem)
 
 ### 工作流集成
 

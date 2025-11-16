@@ -167,12 +167,12 @@ This Bundle integrates with EasyAdmin to provide an out-of-the-box admin backend
 1. Ensure EasyAdmin Bundle is installed and configured
 2. Visit `/admin` path to see the supplier management menu
 3. Supports management of the following entities:
-   - Supplier
-   - SupplierContact
-   - SupplierQualification
-   - Contract
-   - PerformanceEvaluation
-   - EvaluationItem
+    - Supplier
+    - SupplierContact
+    - SupplierQualification
+    - Contract
+    - PerformanceEvaluation
+    - EvaluationItem
 
 ### Workflow Integration
 
