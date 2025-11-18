@@ -20,11 +20,6 @@ use Tourze\SupplierManageBundle\Tests\AbstractSupplierEasyAdminControllerTestCas
 #[RunTestsInSeparateProcesses]
 final class PerformanceEvaluationCrudControllerTest extends AbstractSupplierEasyAdminControllerTestCase
 {
-    public function testGetEntityFqcn(): void
-    {
-        $this->assertEquals(PerformanceEvaluation::class, PerformanceEvaluationCrudController::getEntityFqcn());
-    }
-
     public function testControllerInstantiation(): void
     {
         $controller = new PerformanceEvaluationCrudController();

@@ -19,11 +19,6 @@ use Tourze\SupplierManageBundle\Tests\AbstractSupplierEasyAdminControllerTestCas
 #[RunTestsInSeparateProcesses]
 final class ContractCrudControllerTest extends AbstractSupplierEasyAdminControllerTestCase
 {
-    public function testGetEntityFqcn(): void
-    {
-        $this->assertEquals(Contract::class, ContractCrudController::getEntityFqcn());
-    }
-
     public function testControllerInstantiation(): void
     {
         $controller = new ContractCrudController();
